@@ -1,4 +1,4 @@
-name: 5-minute-cron
+name: Update brains data
 on:
   schedule:
     - cron: '*/5 * * * *'
@@ -6,7 +6,7 @@ jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
-      - name: Update Brains Data
+      - name: Trigger update
         run: |
           curl --request POST \
           --url 'https://asm-brains-checker.vercel.app/api/brains'

@@ -1,5 +1,5 @@
 {
-  "name": "gclxnft",
+  "name": "asm-brains-checker",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,16 +11,16 @@
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
-    "@mui/icons-material": "^5.4.2",
     "@mui/material": "^5.4.2",
-    "@walletconnect/web3-provider": "^1.7.1",
+    "axios": "^0.26.1",
+    "dotenv": "^16.0.0",
     "ethers": "^5.5.4",
-    "file-saver": "^2.0.5",
-    "lodash": "^4.17.21",
+    "ioredis": "^5.0.3",
+    "moment": "^2.29.1",
     "next": "12.0.10",
+    "next-connect": "^0.12.2",
     "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "web3modal": "^1.9.5"
+    "react-dom": "17.0.2"
   },
   "devDependencies": {
     "babel-plugin-styled-components": "^2.0.2",

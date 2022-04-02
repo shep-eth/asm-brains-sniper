@@ -21,28 +21,41 @@ const marketLinks = {
   x2y2: "https://x2y2.io/eth/0xD0318da435DbcE0B347cc6faA330B5A9889e3585/3075",
 };
 
+const formatIQ = (iq, data) => {
+  return (
+    <a
+      href={`https://alphafarm.io/community/altered-state-machine?brainId=${data.tokenId}`}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {iq || "?"}
+    </a>
+  );
+};
+
 const columns = [
   { id: "index", label: "#" },
   { id: "tokenId", label: "Brain ID" },
-  { id: "price", label: "Listing Price", format: (v) => `Ξ${v}` },
-  {
-    id: "link",
-    label: "Marketplace Link",
-    format: (v) => (
-      <a href={v} target="_blank" rel="noreferrer">
-        {v}
-      </a>
-    ),
-  },
+  { id: "price", label: "Listing Price", format: (v, r) => `Ξ${v}` },
+  { id: "iq", label: "IQ", format: formatIQ },
   {
     id: "claimed",
     label: "Airdrop Available?",
-    format: (v) =>
+    format: (v, r) =>
       v ? (
         <Chip label="No" color="primary" variant="outlined" />
       ) : (
         <Chip label="Yes" color="success" />
       ),
+  },
+  {
+    id: "link",
+    label: "Marketplace Link",
+    format: (v, r) => (
+      <a href={v} target="_blank" rel="noreferrer">
+        {v}
+      </a>
+    ),
   },
 ];
 
@@ -63,9 +76,9 @@ function Brains({ data, updatedAt }) {
   return (
     <Container>
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
-        <Grid container spacing={2} columns={16}>
+        <Grid container columns={16}>
           <Grid item xs={8}>
-            <h1>ASM Brains Checker</h1>
+            <h1>ASM Brains Sniper</h1>
           </Grid>
           <Grid item xs={8}>
             <Chip
@@ -76,6 +89,23 @@ function Brains({ data, updatedAt }) {
             />
           </Grid>
         </Grid>
+        <p>
+          Disclaimer: The site is not responsible for the accuracy, reliability,
+          or completeness of the data provided. Please visit {""}
+          <a href="https://alphafarm.io/" target="_blank" rel="noreferrer">
+            AlphaFarm
+          </a>
+          , {""}
+          <a
+            href="https://cortex.alteredstatemachine.xyz/claimedCheck"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ASM Brains Claim Check
+          </a>{" "}
+          {""}
+          and NFT marketplaces to verify.
+        </p>
         <TableContainer>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
@@ -108,7 +138,7 @@ function Brains({ data, updatedAt }) {
                         const value = row[column.id];
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {column.format ? column.format(value) : value}
+                            {column.format ? column.format(value, row) : value}
                           </TableCell>
                         );
                       })}

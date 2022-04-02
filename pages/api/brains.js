@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import Redis from "ioredis";
 import nc from "next-connect";
 import { ethers } from "ethers";
+import { brainIQs } from "../../utils";
 
 dotenv.config();
 
@@ -99,6 +100,7 @@ const handler = nc({
     tokenId: b.tokenId,
     price: formatNumber(b.currentBasePrice / Math.pow(10, 18)),
     market: b.market,
+    iq: brainIQs[b.tokenId],
   }));
 
   const jobs = brains.map((b) => claimed(b));

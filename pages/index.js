@@ -15,7 +15,7 @@ export default function Home({ data, updatedAt }) {
   return (
     <div>
       <Head>
-        <title>ASM Brains Checker</title>
+        <title>ASM Brains Sniper</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
         <meta
           name="description"

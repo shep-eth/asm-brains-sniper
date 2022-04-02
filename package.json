@@ -1,5 +1,5 @@
 {
-  "name": "asm-brains-checker",
+  "name": "asm-brains-sniper",
   "private": true,
   "scripts": {
     "dev": "next dev",

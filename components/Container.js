@@ -3,7 +3,7 @@ import { padWidth } from "../utils";
 
 const ContainerWrapper = styled.div``;
 const Content = styled.div`
-  width: 90%;
+  width: 98%;
   max-width: 1200px;
   margin: 0 auto;
   overflow: hidden;

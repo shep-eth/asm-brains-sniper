@@ -83,14 +83,14 @@ function Brains({ data, updatedAt }) {
           <Grid item xs={8}>
             <Chip
               sx={{ float: "right", marginTop: "30px" }}
-              label={`Data updated at: ${moment(updatedAt).fromNow()} (${moment(
+              label={`Data updated: ${moment(updatedAt).fromNow()} (${moment(
                 updatedAt
               ).format("LTS")})`}
             />
           </Grid>
         </Grid>
         <p>
-          Disclaimer: The site is not responsible for the accuracy, reliability,
+          Disclaimer: The site is not responsible for the accuracy, reliability
           or completeness of the data provided. Please visit {""}
           <a href="https://alphafarm.io/" target="_blank" rel="noreferrer">
             AlphaFarm

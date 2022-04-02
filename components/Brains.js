@@ -18,7 +18,7 @@ const marketLinks = {
     "https://opensea.io/assets/0xd0318da435dbce0b347cc6faa330b5a9889e3585",
   looksrare:
     "https://looksrare.org/collections/0xd0318da435dbce0b347cc6faa330b5a9889e3585",
-  x2y2: "https://x2y2.io/eth/0xD0318da435DbcE0B347cc6faA330B5A9889e3585/3075",
+  x2y2: "https://x2y2.io/eth/0xD0318da435DbcE0B347cc6faA330B5A9889e3585",
 };
 
 const formatIQ = (iq, data) => {

@@ -7,4 +7,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger update
-        run: curl --request POST --url 'https://asm-brains-checker.vercel.app/api/brains'
+        run: curl --request POST --url 'https://asm-brains-sniper.vercel.app/api/brains'

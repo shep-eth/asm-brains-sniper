@@ -84,8 +84,12 @@ const claimed = async (brain) => {
 
 const nofityIQMissing = async (data) => {
   const tokenIDs = data.filter((d) => !d.iq).map((d) => d.tokenId.toString());
-  const content = `Brain IDs to add IQ data: ${tokenIDs.join(", ")}`;
-  await axios.post(process.env.DC_WEBHOOK, { content });
+  if (tokenIDs.length > 0) {
+    const content = `<@298315370303979520> Brain IDs to add IQ data: ${tokenIDs.join(
+      ", "
+    )}`;
+    await axios.post(process.env.DC_WEBHOOK, { content });
+  }
 };
 
 const formatNumber = (n) => {

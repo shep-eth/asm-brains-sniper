@@ -90,8 +90,9 @@ function Brains({ data, updatedAt }) {
           </Grid>
         </Grid>
         <p>
-          Disclaimer: The site is not responsible for the accuracy, reliability
-          or completeness of the data provided. Please visit {""}
+          Disclaimer: This is NOT an official tool. We and the tool are not
+          responsible for the accuracy, reliability or completeness of the data
+          provided. Please visit {""}
           <a href="https://alphafarm.io/" target="_blank" rel="noreferrer">
             AlphaFarm
           </a>
@@ -104,7 +105,10 @@ function Brains({ data, updatedAt }) {
             ASM Brains Claim Check
           </a>{" "}
           {""}
-          and NFT marketplaces to verify.
+          and NFT marketplaces to verify. IQ data from AlphaFarm is purely
+          speculative and not endorsed by ASM. ASM has not yet released how they
+          will assess the Genome Matrixes for IQ in any use-case - DYOR, this is
+          not financial advice.
         </p>
         <TableContainer>
           <Table stickyHeader aria-label="sticky table">

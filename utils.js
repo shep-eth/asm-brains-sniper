@@ -1,5 +1,6 @@
 export const padWidth = "1024px";
 
+// Please make sure the keys (Brain IDs) are in order
 export const brainIQs = {
   1: 115,
   234: 84,
@@ -24,6 +25,7 @@ export const brainIQs = {
   5669: 77,
   7089: 102,
   7134: 77,
+  7490: 104,
   7580: 95,
   7888: 105,
 };

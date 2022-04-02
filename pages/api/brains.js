@@ -82,6 +82,12 @@ const claimed = async (brain) => {
   return brain;
 };
 
+const nofityIQMissing = async (data) => {
+  const tokenIDs = data.filter((d) => !d.iq).map((d) => d.tokenId.toString());
+  const content = `Brain IDs to add IQ data: ${tokenIDs.join(", ")}`;
+  await axios.post(process.env.DC_WEBHOOK, { content });
+};
+
 const formatNumber = (n) => {
   return parseFloat(n.toFixed(2));
 };
@@ -102,6 +108,8 @@ const handler = nc({
     market: b.market,
     iq: brainIQs[b.tokenId],
   }));
+
+  await nofityIQMissing(brains);
 
   const jobs = brains.map((b) => claimed(b));
   const result = await Promise.all(jobs);

@@ -106,9 +106,7 @@ const handler = nc({
     res.status(404).json({ error: "API not found!" });
   },
 }).post(async (req, res) => {
-  console.log(req);
   const data = await fetchData("asm-brains");
-  console.log(data);
   const brains = data.data.map((b) => ({
     tokenId: b.tokenId,
     price: formatNumber(b.currentBasePrice / Math.pow(10, 18)),

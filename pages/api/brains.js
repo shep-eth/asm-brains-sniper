@@ -8,7 +8,7 @@ import { brainIQs } from "../../utils";
 dotenv.config();
 
 const AIRDROP_CONTRACT = "0x30EFB10082622869a3233A65Db5CBefc0ad351eB";
-const GEM_API = "https://gem-api-3.herokuapp.com/assets";
+const GEM_API = "https://api-3.gemlabs.xyz/assets";
 const GEM_PERPAGE = 300;
 const REDIS_KEY = "asmbrains";
 
@@ -23,6 +23,7 @@ const fetchData = async (slug) => {
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36",
       Origin: "https://www.gem.xyz",
       "Content-Type": "application/json; charset=utf-8",
+      "x-api-key": "iMHRYlpIXs3zfcBY1r3iKLdqS2YUuOUs",
     },
     data: {
       fields: {
@@ -105,7 +106,9 @@ const handler = nc({
     res.status(404).json({ error: "API not found!" });
   },
 }).post(async (req, res) => {
+  console.log(req);
   const data = await fetchData("asm-brains");
+  console.log(data);
   const brains = data.data.map((b) => ({
     tokenId: b.tokenId,
     price: formatNumber(b.currentBasePrice / Math.pow(10, 18)),

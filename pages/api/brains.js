@@ -8,64 +8,48 @@ import { brainIQs } from "../../utils";
 dotenv.config();
 
 const AIRDROP_CONTRACT = "0x30EFB10082622869a3233A65Db5CBefc0ad351eB";
+const ASM_BRAINS_CONTRACT = "0xd0318da435dbce0b347cc6faa330b5a9889e3585";
 const GEM_API = "https://api-3.gemlabs.xyz/assets";
 const GEM_PERPAGE = 300;
 const REDIS_KEY = "asmbrains";
 
 const client = new Redis(process.env.REDIS_URL);
 
-const fetchData = async (slug) => {
+const fetchFromGenie = async (contractAddress, offset, limit) => {
   const res = await axios({
     method: "POST",
-    url: GEM_API,
+    url: "https://v2.api.genie.xyz/assets",
     headers: {
       "User-Agent":
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36",
-      Origin: "https://www.gem.xyz",
+      Referer: "https://www.genie.xyz/",
       "Content-Type": "application/json; charset=utf-8",
-      "x-api-key": "iMHRYlpIXs3zfcBY1r3iKLdqS2YUuOUs",
     },
     data: {
-      fields: {
-        tokenId: 1,
-        tokenReserves: 1,
-        paymentToken: 1,
-        ethReserves: 1,
-        smallImageUrl: 1,
-        market: 1,
-        animationUrl: 1,
-        currentBasePrice: 1,
-        startingPrice: 1,
-        rarityScore: 1,
-        sellOrders: 1,
-        collectionSymbol: 1,
-        name: 1,
-        imageUrl: 1,
-        id: 1,
-        standard: 1,
-        externalLink: 1,
-        collectionName: 1,
-        marketplace: 1,
-        priceInfo: 1,
-        marketUrl: 1,
-        address: 1,
-      },
-      status: ["buy_now"],
       filters: {
-        slug: slug,
-        traitsRange: {},
+        address: contractAddress,
         traits: {},
-        price: {},
+        searchText: "",
+        notForSale: false,
+        numTraits: [],
       },
-      offset: 0,
-      sort: {
-        currentEthPrice: "asc",
+      fields: {
+        address: 1,
+        name: 1,
+        id: 1,
+        imageUrl: 1,
+        currentPrice: 1,
+        currentUsdPrice: 1,
+        paymentToken: 1,
+        animationUrl: 1,
+        notForSale: 1,
+        rarity: 1,
       },
+      limit,
+      offset,
       markets: ["opensea", "looksrare", "x2y2"],
-      limit: GEM_PERPAGE,
     },
   });
-
   return res.data;
 };
 
@@ -106,28 +90,30 @@ const handler = nc({
     res.status(404).json({ error: "API not found!" });
   },
 }).post(async (req, res) => {
-  const data = await fetchData("asm-brains");
-  const brains = data.data.map((b) => ({
-    tokenId: b.tokenId,
-    price: formatNumber(b.currentBasePrice / Math.pow(10, 18)),
-    market: b.market,
-    iq: brainIQs[b.tokenId],
+  let hasNext = true;
+  let page = 0;
+  let perPage = 50;
+  let data = [];
+  while (hasNext) {
+    const offset = page * perPage;
+    const newData = await fetchFromGenie(ASM_BRAINS_CONTRACT, offset, perPage);
+    hasNext = newData.hasNext;
+    data = data.concat(newData.data);
+    page += 1;
+  }
+
+  const brains = data.map((b) => ({
+    tokenId: parseInt(b.tokenId, 10),
+    price: formatNumber(parseInt(b.basePrice, 10) / Math.pow(10, 18)),
+    market: b.marketplace,
+    iq: brainIQs[parseInt(b.tokenId, 10)],
   }));
 
   await nofityIQMissing(brains);
 
   const jobs = brains.map((b) => claimed(b));
   const result = await Promise.all(jobs);
-
-  const claimedFloor = result.find((i) => i.claimed);
-  const unclaimedFloor = result.find((i) => !i.claimed);
-  const stats = {
-    claimed: formatNumber(claimedFloor.price),
-    unclaimed: formatNumber(unclaimedFloor.price),
-    diff: formatNumber(unclaimedFloor.price - claimedFloor.price),
-  };
-  const obj = { stats, data: result, updatedAt: Date.now() };
-
+  const obj = { data: result, updatedAt: Date.now() };
   const r = await client.set(REDIS_KEY, JSON.stringify(obj));
 
   res.status(200).json({ result: r });

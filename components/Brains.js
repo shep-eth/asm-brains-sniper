@@ -110,7 +110,7 @@ function Brains({ data, updatedAt }) {
             target="_blank"
             rel="noreferrer"
           >
-            ASM Brains Claim Check
+            ASM Brains Claim Checker
           </a>{" "}
           {""}
           and NFT marketplaces to verify. The IQ data on this page was

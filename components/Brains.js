@@ -23,13 +23,17 @@ const marketLinks = {
 
 const formatIQ = (iq, data) => {
   return (
-    <a
-      href={`https://alphafarm.io/community/altered-state-machine?brainId=${data.tokenId}`}
-      target="_blank"
-      rel="noreferrer"
-    >
-      {iq || "?"}
-    </a>
+    <>
+      {iq || "?"} {"("}
+      <a
+        href={`https://theprawns.xyz/brain-map`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        Genome
+      </a>
+      {")"}
+    </>
   );
 };
 
@@ -93,22 +97,27 @@ function Brains({ data, updatedAt }) {
           Disclaimer: This is NOT an official tool. We and the tool are not
           responsible for the accuracy, reliability or completeness of the data
           provided. Please visit {""}
-          <a href="https://alphafarm.io/" target="_blank" rel="noreferrer">
-            AlphaFarm
+          <a
+            href="https://theprawns.xyz/brain-map"
+            target="_blank"
+            rel="noreferrer"
+          >
+            The Prawns
           </a>
           , {""}
           <a
-            href="https://cortex.alteredstatemachine.xyz/claimedCheck"
+            href="https://cortex.alteredstatemachine.xyz/claimed-check"
             target="_blank"
             rel="noreferrer"
           >
             ASM Brains Claim Check
           </a>{" "}
           {""}
-          and NFT marketplaces to verify. IQ data from AlphaFarm is purely
-          speculative and not endorsed by ASM. ASM has not yet released how they
-          will assess the Genome Matrixes for IQ in any use-case - DYOR, this is
-          not financial advice.
+          and NFT marketplaces to verify. The IQ data on this page was
+          originally collected from AlphaFarm, which is purely speculative and
+          not endorsed by ASM. ASM has not yet released how they will assess the
+          Genome Matrixes for IQ in any use-case - DYOR, this is not financial
+          advice.
         </p>
         <TableContainer>
           <Table stickyHeader aria-label="sticky table">

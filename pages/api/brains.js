@@ -15,6 +15,161 @@ const REDIS_KEY = "asmbrains";
 
 const client = new Redis(process.env.REDIS_URL);
 
+const fetchFromElement = async (slug, after) => {
+  const variables = {
+    first: 50,
+    realtime: true,
+    thirdStandards: ["looksrare", "opensea"],
+    collectionSlugs: [slug],
+    sortAscending: false,
+    sortBy: "PriceLowToHigh",
+    toggles: ["BUY_NOW"],
+    isPendingTx: false,
+    isTraits: false,
+  };
+
+  if (after !== "") {
+    variables.after = after;
+  }
+
+  const res = await axios({
+    method: "POST",
+    url: "https://api.element.market/graphql?args=AssetsListForCollectionV2",
+    headers: {
+      accept: "*/*",
+      "accept-language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+      "content-type": "application/json",
+      lang: "en-US",
+      languagetype: "en-US",
+      region: "other",
+      "sec-ch-ua":
+        '"Not_A Brand";v="99", "Google Chrome";v="109", "Chromium";v="109"',
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": '"macOS"',
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-site",
+      "x-api-key": "zQbYj7RhC1VHIBdWU63ki5AJKXloamDT",
+      "x-api-sign":
+        "3b1dcfc2e1dbac22e4fa46216ead82d91cc4c9cf34d106211318c91ac9103262.5659.1675835900",
+      "x-query-args": "AssetsListForCollectionV2",
+      Referer: "https://element.market/",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+    },
+    data: {
+      operationName: "AssetsListForCollectionV2",
+      variables,
+      query: `query AssetsListForCollectionV2($before: String, $after: String, $first: Int, $last: Int, $querystring: String, $categorySlugs: [String!], $collectionSlugs: [String!], $sortBy: SearchSortBy, $sortAscending: Boolean, $toggles: [SearchToggle!], $ownerAddress: Address, $creatorAddress: Address, $blockChains: [BlockChainInput!], $paymentTokens: [String!], $priceFilter: PriceFilterInput, $traitFilters: [AssetTraitFilterInput!], $contractAliases: [String!], $thirdStandards: [String!], $uiFlag: SearchUIFlag, $markets: [String!], $isTraits: Boolean!, $isPendingTx: Boolean!) {
+  search: searchV2(
+    before: $before
+    after: $after
+    first: $first
+    last: $last
+    search: {querystring: $querystring, categorySlugs: $categorySlugs, collectionSlugs: $collectionSlugs, sortBy: $sortBy, sortAscending: $sortAscending, toggles: $toggles, ownerAddress: $ownerAddress, creatorAddress: $creatorAddress, blockChains: $blockChains, paymentTokens: $paymentTokens, priceFilter: $priceFilter, traitFilters: $traitFilters, contractAliases: $contractAliases, uiFlag: $uiFlag, markets: $markets}
+  ) {
+    totalCount
+    edges {
+      cursor
+      node {
+        asset {
+          chain
+          chainId
+          contractAddress
+          tokenId
+          tokenType
+          name
+          imagePreviewUrl
+          imageThumbnailUrl
+          animationUrl
+          rarityRank
+          orderData(standards: $thirdStandards) {
+            bestAsk {
+              ...BasicOrder
+            }
+            bestBid {
+              ...BasicOrder
+            }
+          }
+          assetEventData {
+            lastSale {
+              lastSalePrice
+              lastSalePriceUSD
+              lastSaleTokenContract {
+                name
+                address
+                icon
+                decimal
+                accuracy
+              }
+            }
+          }
+          pendingTx @include(if: $isPendingTx) {
+            time
+            hash
+            gasFeeMax
+            gasFeePrio
+            txFrom
+            txTo
+            market
+          }
+          traits @include(if: $isTraits) {
+            trait
+            numValue
+          }
+          collection {
+            slug
+          }
+          suspiciousStatus
+        }
+      }
+    }
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+  }
+}
+
+fragment BasicOrder on OrderV3Type {
+  __typename
+  chain
+  chainId
+  chainMId
+  expirationTime
+  listingTime
+  maker
+  taker
+  side
+  saleKind
+  paymentToken
+  quantity
+  priceBase
+  priceUSD
+  price
+  standard
+  contractAddress
+  tokenId
+  schema
+  extra
+  paymentTokenCoin {
+    name
+    address
+    icon
+    chain
+    chainId
+    decimal
+    accuracy
+  }
+}
+`,
+    },
+  });
+
+  return res.data.data.search;
+};
+
 const fetchFromGenie = async (contractAddress, offset, limit) => {
   const res = await axios({
     method: "POST",
@@ -81,23 +236,20 @@ const handler = nc({
   },
 }).post(async (req, res) => {
   let hasNext = true;
-  let page = 0;
-  let perPage = 50;
+  let after = "";
   let data = [];
   while (hasNext) {
-    const offset = page * perPage;
-    const newData = await fetchFromGenie(ASM_BRAINS_CONTRACT, offset, perPage);
-    console.log(newData);
-    hasNext = newData.hasNext;
-    data = data.concat(newData.data);
-    page += 1;
+    const newData = await fetchFromElement("asm-brains", after);
+    after = newData.pageInfo.endCursor;
+    hasNext = newData.pageInfo.hasNextPage;
+    data = data.concat(newData.edges);
   }
 
   const brains = data.map((b) => ({
-    tokenId: parseInt(b.tokenId, 10),
-    price: formatNumber(parseInt(b.basePrice, 10) / Math.pow(10, 18)),
-    market: b.marketplace,
-    iq: brainIQs[parseInt(b.tokenId, 10)],
+    tokenId: parseInt(b.node.asset.tokenId, 10),
+    price: formatNumber(b.node.asset.orderData.bestAsk.price),
+    market: b.node.asset.orderData.bestAsk.standard,
+    iq: brainIQs[parseInt(b.node.asset.tokenId, 10)],
   }));
 
   const jobs = brains.map((b) => claimed(b));

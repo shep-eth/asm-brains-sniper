@@ -202,7 +202,7 @@ const fetchFromGenie = async (contractAddress, offset, limit) => {
       },
       limit,
       offset,
-      markets: ["opensea", "looksrare", "x2y2"],
+      markets: ["opensea", "looksrare", "x2y2", "blur"],
     },
   });
   return res.data;
